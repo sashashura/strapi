@@ -1,14 +1,16 @@
 import React from 'react';
-import styled from 'styled-components';
 import { components } from 'react-select';
-import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-
+import styled from 'styled-components';
+import { useIntl } from 'react-intl';
 import { pxToRem } from '@strapi/helper-plugin';
 import { Flex } from '@strapi/design-system/Flex';
 import { Typography } from '@strapi/design-system/Typography';
-
-import { getTrad } from '../../../utils';
+import get from 'lodash/get';
+import has from 'lodash/has';
+import isEmpty from 'lodash/isEmpty';
+import { Tooltip } from '@strapi/design-system/Tooltip';
+import { getTrad } from '../../utils';
 
 const StyledBullet = styled.div`
   flex-shrink: 0;
@@ -18,15 +20,16 @@ const StyledBullet = styled.div`
   background-color: ${({ theme, isDraft }) =>
     theme.colors[isDraft ? 'secondary600' : 'success600']};
   border-radius: 50%;
+  cursor: pointer;
 `;
 
-export const Option = (props) => {
+const SingleValue = (props) => {
   const { formatMessage } = useIntl();
-  const Component = components.Option;
-  const { publicationState, mainField, id } = props.data;
+  const Component = components.SingleValue;
+  const hasDraftAndPublish = has(get(props, 'data.value'), 'publishedAt');
+  const isDraft = isEmpty(get(props, 'data.value.publishedAt'));
 
-  if (publicationState) {
-    const isDraft = publicationState === 'draft';
+  if (hasDraftAndPublish) {
     const draftMessage = {
       id: getTrad('components.Select.draft-info-title'),
       defaultMessage: 'State: Draft',
@@ -41,21 +44,27 @@ export const Option = (props) => {
       <Component {...props}>
         <Flex>
           <StyledBullet title={title} isDraft={isDraft} />
-          <Typography ellipsis>{mainField ?? id}</Typography>
+          <Tooltip description={props.data.label ?? '-'}>
+            <Typography ellipsis>{props.data.label ?? '-'}</Typography>
+          </Tooltip>
         </Flex>
       </Component>
     );
   }
 
-  return <Component {...props}>{mainField ?? id}</Component>;
+  return <Component {...props}>{props.data.label ?? '-'}</Component>;
 };
 
-Option.propTypes = {
-  isFocused: PropTypes.bool.isRequired,
-  data: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    isDraft: PropTypes.bool,
-    mainField: PropTypes.string,
-    publicationState: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+SingleValue.propTypes = {
+  data: PropTypes.object.isRequired,
+  selectProps: PropTypes.shape({
+    mainField: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      schema: PropTypes.shape({
+        type: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
   }).isRequired,
 };
+
+export default SingleValue;
