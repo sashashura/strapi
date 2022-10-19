@@ -2,15 +2,17 @@ import React from 'react';
 import { components } from 'react-select';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { useIntl } from 'react-intl';
-import { pxToRem } from '@strapi/helper-plugin';
-import { Flex } from '@strapi/design-system/Flex';
-import { Typography } from '@strapi/design-system/Typography';
 import get from 'lodash/get';
 import has from 'lodash/has';
 import isEmpty from 'lodash/isEmpty';
+import { useIntl } from 'react-intl';
+
+import { pxToRem } from '@strapi/helper-plugin';
+import { Flex } from '@strapi/design-system/Flex';
+import { Typography } from '@strapi/design-system/Typography';
 import { Tooltip } from '@strapi/design-system/Tooltip';
-import { getTrad } from '../../utils';
+
+import { getTrad } from '../../../utils';
 
 const StyledBullet = styled.div`
   flex-shrink: 0;
@@ -44,8 +46,8 @@ const SingleValue = (props) => {
       <Component {...props}>
         <Flex>
           <StyledBullet title={title} isDraft={isDraft} />
-          <Tooltip description={props.data.label ?? '-'}>
-            <Typography ellipsis>{props.data.label ?? '-'}</Typography>
+          <Tooltip description={mainField ?? id}>
+            <Typography ellipsis>{mainField ?? id}</Typography>
           </Tooltip>
         </Flex>
       </Component>
