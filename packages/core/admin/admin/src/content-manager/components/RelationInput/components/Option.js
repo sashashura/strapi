@@ -42,9 +42,7 @@ export const Option = (props) => {
       <Component {...props}>
         <Flex>
           <StyledBullet title={title} isDraft={isDraft} />
-          <Tooltip description={mainField ?? id}>
-            <Typography ellipsis>{mainField ?? id}</Typography>
-          </Tooltip>
+          <Typography ellipsis>{mainField ?? id}</Typography>
         </Flex>
       </Component>
     );
