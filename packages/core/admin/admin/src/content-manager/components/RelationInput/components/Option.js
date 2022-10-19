@@ -1,16 +1,12 @@
 import React from 'react';
-import { components } from 'react-select';
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import get from 'lodash/get';
-import has from 'lodash/has';
-import isEmpty from 'lodash/isEmpty';
+import { components } from 'react-select';
 import { useIntl } from 'react-intl';
+import PropTypes from 'prop-types';
 
 import { pxToRem } from '@strapi/helper-plugin';
 import { Flex } from '@strapi/design-system/Flex';
 import { Typography } from '@strapi/design-system/Typography';
-import { Tooltip } from '@strapi/design-system/Tooltip';
 
 import { getTrad } from '../../../utils';
 
@@ -22,16 +18,15 @@ const StyledBullet = styled.div`
   background-color: ${({ theme, isDraft }) =>
     theme.colors[isDraft ? 'secondary600' : 'success600']};
   border-radius: 50%;
-  cursor: pointer;
 `;
 
-const SingleValue = (props) => {
+export const Option = (props) => {
   const { formatMessage } = useIntl();
-  const Component = components.SingleValue;
-  const hasDraftAndPublish = has(get(props, 'data.value'), 'publishedAt');
-  const isDraft = isEmpty(get(props, 'data.value.publishedAt'));
+  const Component = components.Option;
+  const { publicationState, mainField, id } = props.data;
 
-  if (hasDraftAndPublish) {
+  if (publicationState) {
+    const isDraft = publicationState === 'draft';
     const draftMessage = {
       id: getTrad('components.Select.draft-info-title'),
       defaultMessage: 'State: Draft',
@@ -52,19 +47,15 @@ const SingleValue = (props) => {
     );
   }
 
-  return <Component {...props}>{props.data.label ?? '-'}</Component>;
+  return <Component {...props}>{mainField ?? id}</Component>;
 };
 
-SingleValue.propTypes = {
-  data: PropTypes.object.isRequired,
-  selectProps: PropTypes.shape({
-    mainField: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      schema: PropTypes.shape({
-        type: PropTypes.string.isRequired,
-      }).isRequired,
-    }).isRequired,
+Option.propTypes = {
+  isFocused: PropTypes.bool.isRequired,
+  data: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    isDraft: PropTypes.bool,
+    mainField: PropTypes.string,
+    publicationState: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   }).isRequired,
 };
-
-export default SingleValue;
