@@ -3,20 +3,35 @@
 const { getService } = require('./utils');
 
 module.exports = async ({ strapi }) => {
-  // set plugin store
-  const configurator = strapi.store({ type: 'plugin', name: 'upload', key: 'settings' });
-
-  // if provider config does not exist set one by default
-  const config = await configurator.get();
-
-  if (!config) {
-    await configurator.set({
-      value: {
+  const Stores = new Map([
+    [
+      'settings',
+      {
         sizeOptimization: true,
         responsiveDimensions: true,
         autoOrientation: false,
       },
-    });
+    ],
+    [
+      'view_configuration',
+      {
+        pageSize: 10,
+      },
+    ],
+  ]);
+
+  for (const [key, defaultValue] of Stores) {
+    // set plugin store
+    const configurator = strapi.store({ type: 'plugin', name: 'upload', key });
+
+    // if provider config does not exist set one by default
+    const config = await configurator.get();
+
+    if (!config) {
+      await configurator.set({
+        value: defaultValue,
+      });
+    }
   }
 
   await registerPermissionActions();
@@ -58,6 +73,12 @@ const registerPermissionActions = async () => {
       displayName: 'Copy link',
       uid: 'assets.copy-link',
       subCategory: 'assets',
+      pluginName: 'upload',
+    },
+    {
+      section: 'plugins',
+      displayName: 'Configure view',
+      uid: 'configure-view',
       pluginName: 'upload',
     },
     {

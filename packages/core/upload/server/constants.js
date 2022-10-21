@@ -7,6 +7,7 @@ const ACTIONS = {
   update: 'plugin::upload.assets.update',
   download: 'plugin::upload.assets.download',
   copyLink: 'plugin::upload.assets.copy-link',
+  configureView: 'plugin::upload.configure-view',
 };
 
 module.exports = {
